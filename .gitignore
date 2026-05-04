@@ -1,0 +1,11 @@
+*.exe
+*.o
+.vscode/
+build/
+dist/
+*.log
+*.tmp
+.DS_Store
+node_modules/
+.env
+*.pyc
