@@ -193,6 +193,32 @@ void ajouterLivre(Library **lib){
     free(newLivre);
 }
 
+void modifierLivre(Library **lib, int code){
+    Livre *l = chercherLivre(*lib, code);
+    if(l == NULL){
+        printf("Livre non trouve!\n");
+        return;
+    }
+
+    printf("\n\n================[Modifier Livre]==================\n\n");
+
+    printf("ancien titre: %s\n", l->titre);
+    printf("nouveau titre : ");
+    gets(l->titre);
+
+    printf("ancien auteur : %s\n", l->auteur);
+    printf("nouveau auteur: ");
+    gets(l->auteur);
+
+    printf("ancienne annee : %d\n", l->annee);
+    printf("nouvelle annee:  ");
+    scanf("%d", &l->annee);
+
+    printf("ancienne disponibilite : %d\n", l->disponible);
+    printf("nouvelle disponibilite: ");
+    scanf("%d", &l->disponible);
+}
+
 void afficherLibrary(Library *lib){
     Library* cur = lib;
 
@@ -271,6 +297,14 @@ int main()
             printf("\nRestauration du dernier livre suprime ...");
             undoSupprimer(&lib, &undos);
             printf("\nDONE !");
+            break ;
+        case 6:
+            printf("Entrer le code de livre a modifier : ");
+            scanf("%d", &code_);
+            getchar();
+            modifierLivre(&lib, code_);
+            printf("DONE !");
+            code_ = 0;
             break ;
         }
 
