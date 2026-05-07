@@ -238,6 +238,53 @@ void afficherLibrary(Library *lib){
     printf("|============================================================|\n");
 }
 
+void disponibleLivres(Library *lib){
+    Library* cur = lib;
+
+    printf("\n\n|=========================Livres Disponibles============================|\n");
+    printf("|                                                            |\n");
+    while(cur != NULL){
+        if (cur->livre.disponible > 0){
+            printf("|             |=================================|            |\n");
+            printf("|             | titre: %-24s |            |\n", cur->livre.titre);
+            printf("|             | auteur: %-23s |            |\n", cur->livre.auteur);
+            printf("|             | code: %-25d |            |\n",cur->livre.code);
+            printf("|             | annee: %-24d |            |\n",cur->livre.annee);
+            printf("|             | disponible: %-19d |            |\n",cur->livre.disponible);
+            printf("|             |=================================|            |\n");
+        }
+        cur = cur->next ;
+    }
+    printf("|                                                            |\n");
+    printf("|========================================================================|\n");
+}
+
+void trierParAnnee(Library *lib){
+    if(lib == NULL) return;
+
+    int swapped;
+    Library *cur;
+    Library *last = NULL;
+
+    do {
+        swapped = 0;
+        cur = lib;
+
+        while(cur->next != last){
+            if(cur->livre.annee > cur->next->livre.annee){
+                Livre temp = cur->livre;
+                cur->livre = cur->next->livre;
+                cur->next->livre = temp;
+                swapped = 1;
+            }
+            cur = cur->next;
+        }
+        last = cur;
+    } while(swapped);
+
+    printf("\nLivres tries par annee avec succes!\n");
+}
+
 int main()
 {
     //for undo feature setup
@@ -305,6 +352,13 @@ int main()
             modifierLivre(&lib, code_);
             printf("DONE !");
             code_ = 0;
+            break ;
+        case 7:
+            disponibleLivres(lib);
+            break ;
+        case 8:
+            trierParAnnee(lib);
+            afficherLibrary(lib);
             break ;
         }
 
