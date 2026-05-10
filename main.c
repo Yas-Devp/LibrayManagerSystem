@@ -25,6 +25,20 @@ typedef struct Pile{
 Pile undos;
 
 
+typedef struct Emprunt{
+    char lecteurNom[20];
+    char lecteurPrenom[20];
+    int code;
+    struct Emprunt *next;
+} Emprunt ;
+
+typedef struct File{
+    Emprunt *avant;
+    Emprunt *arrier;
+}File ;
+
+File emprunts ;
+
 void supprimer1erUndo(Pile *p){
     if(p->nb_elem >= p->max){
         for(int i=0; i < p->max - 1 ; i++){
@@ -285,6 +299,83 @@ void trierParAnnee(Library *lib){
     printf("\nLivres tries par annee avec succes!\n");
 }
 
+void ajouterEmprunt(Library *lib){
+    char nom[20];
+    char prenom[20];
+    int code ;
+
+    printf("\n\n===============[ Demande d'emprunt ]===============\n");
+    printf(" 1- Entrer votre nom : ");
+    gets(nom);
+    printf(" 2- Entrer votre prenom : ");
+    gets(prenom);
+    do{
+        printf(" 3- Entrer le code de livre a emprunte : ");
+        scanf("%d", &code);
+    }while(chercherLivre(lib, code)== NULL);
+
+    Emprunt *newEmp = (Emprunt*) malloc(sizeof(Emprunt));
+    strcpy(newEmp->lecteurNom, nom);
+    strcpy(newEmp->lecteurPrenom, prenom);
+    newEmp->code = code;
+    newEmp->next = NULL ;
+
+    if(emprunts.avant == NULL){
+        emprunts.avant = newEmp ;
+        emprunts.arrier = newEmp ;
+    }else{
+        emprunts.arrier->next = newEmp ;
+        emprunts.arrier = newEmp ;
+    }
+}
+
+void afficherEmprunts(){
+    Emprunt *cur = emprunts.avant;
+    if(cur == NULL){
+        printf("aucune demande d'emprunt !");
+        return ;
+    }
+
+    int conteur = 1;
+    printf("\n\n===============[ Demandes d'emprunt ]===============\n");
+    while(cur != NULL) {
+        printf("%d - ", conteur);
+        printf("le nom du lecteur : %s \n", cur->lecteurNom);
+        printf("   le prenom du lecteur : %s \n", cur->lecteurPrenom);
+        printf("   le code du livre : %d \n", cur->code);
+        printf("-------------------------------------------------------\n");
+        cur = cur->next;
+        conteur ++;
+    }
+
+}
+
+void traiterEmprunt(Library *lib){
+    if(emprunts.avant == NULL){
+        printf("aucune demande d'emprunt a traite !");
+        return ;
+    }
+
+    Emprunt *cur = emprunts.avant ;
+
+    if(emprunts.avant == NULL) {
+        emprunts.arrier = NULL;
+    }
+
+    Livre *book = chercherLivre(lib, cur->code);
+
+    if(book != NULL && book->disponible == 1){
+        book->disponible = 0;
+        printf("\nTriater Emprunt de %s %s\n", cur->lecteurPrenom, cur->lecteurNom);
+    } else {
+        printf("\nEmprunt refusee (livre non disponible)\n");
+    }
+
+    emprunts.avant = cur->next;
+    if(emprunts.avant == NULL) emprunts.arrier = NULL;
+    free(cur);
+}
+
 int main()
 {
     //for undo feature setup
@@ -292,6 +383,9 @@ int main()
     undos.max = 5;
     undos.livres = (Livre*) malloc(undos.max * sizeof(Livre));
 
+    //for emprunts
+    emprunts.avant = NULL;
+    emprunts.arrier = NULL;
 
     //for library system
     afficherMenu();
@@ -359,6 +453,16 @@ int main()
         case 8:
             trierParAnnee(lib);
             afficherLibrary(lib);
+            break ;
+        case 9:
+            getchar();
+            ajouterEmprunt(lib);
+            break ;
+        case 10 :
+            afficherEmprunts();
+            break ;
+        case 11 :
+            traiterEmprunt(lib);
             break ;
         }
 
